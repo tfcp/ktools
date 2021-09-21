@@ -1,9 +1,8 @@
 # tf-ktool
-local tool for k8s. 
-获取常用信息 (并且编排过)
-ktools get deploy -n app
+a funny local k8s tool. 
 
-|  operator   | describe  |default|
-|  ----  | ----  |----|
-| switch | switch local env  ||
-| env | environment list. |
+|  cmd   | describe  |
+|  ----  | ----  |
+| help | show ktools help infos.  |
+| switch | switch local env.  |
+| env | config environment list. |

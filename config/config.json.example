@@ -1,0 +1,17 @@
+{
+    "env": {
+        "dev": {
+            "name": "开发环境",
+            "path": "./config/dev/config"
+        },
+        "test": {
+            "name": "测试环境",
+            "path": "./config/test/config"
+        },
+        "prod": {
+            "name": "正式环境",
+            "path": "./config/prod/config"
+        }
+    },
+    "current-env": "test"
+}

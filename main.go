@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/ktools/cmd"
 	"github.com/ktools/library"
 )
@@ -30,7 +29,7 @@ func init() {
 
 func main() {
 	var (
-		ns string
+	//ns string
 	)
 	//flag.StringVar(&ns, "ns", "default", "input your deploy name")
 	//flag.StringVar(&resourceName, "deploy", "default", "input your deploy name")
@@ -45,20 +44,8 @@ func main() {
 			cmd.Switch(envName, KConfig)
 		case help:
 			cmd.Help()
-		case start:
-			fmt.Println("\r\n")
-			fmt.Printf("please input namespace(请输入目标命名空间): ")
-			fmt.Scan(&ns)
-			nsList := []string{}
-			if ns != "" {
-				nsList = cmd.Namespace(ns)
-			}
-			var selectNs int
-			fmt.Printf("please select namespace(请选择命名空间): ")
-			fmt.Scan(&selectNs)
-			fmt.Println(nsList[selectNs])
-			fmt.Printf("please select u want resource(请选择你想查看的资源): ")
-
+		case pip:
+			cmd.Pip()
 		}
 	}
 

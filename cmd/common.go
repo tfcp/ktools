@@ -61,7 +61,7 @@ func Env(config *library.Config) {
 		envData := k + ":" + vm["name"].(string)
 		envNameList = append(envNameList, envData)
 	}
-	fmt.Println("envList(环境列表)", envNameList)
+	fmt.Println("envList(环境列表): ", envNameList)
 }
 
 func Help() {

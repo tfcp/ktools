@@ -2,6 +2,7 @@ package library
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -51,4 +52,15 @@ func FilterResource(resourceName, inputName string) bool {
 		return true
 	}
 	return false
+}
+
+// generate graph
+func CmdGraph(content []string) {
+	fmt.Println("#########################################################")
+	for i := 0; i < len(content); i++ {
+		si := strconv.Itoa(i)
+		fmt.Println("    " + Red(si) + "   :   " + Green(content[i]))
+		fmt.Println("--------------------------------------------------")
+	}
+	fmt.Println("#########################################################")
 }

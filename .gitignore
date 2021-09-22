@@ -140,7 +140,7 @@ databus.toml
 log.toml
 log.txt
 *runtime/
-
+config/
 # medgen
 *.swagger.json
 

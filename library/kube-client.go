@@ -1,32 +1,32 @@
 package library
 
-import ()
-
-var (
-//ClientSet *kubernetes.Clientset
+import (
+	"fmt"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
-//func init() {
-//	//kubeConfig :=
-//	config, err := clientcmd.BuildConfigFromFlags("", k8sconfig)
-//	if err != nil {
-//		log.Println(err)
-//	}
-//
-//	//config, err := rest.InClusterConfig()
-//	//if err != nil {
-//	//	panic(err.Error())
-//	//}
-//
-//	// 根据指定的 config 创建一个新的 clientset
-//	//clientset, err := kubernetes.NewForConfig(config)
-//	ClientSet, err = kubernetes.NewForConfig(config)
-//	if err != nil {
-//		log.Fatalln(err)
-//	} else {
-//		fmt.Println("connect k8s success")
-//	}
-//}
+var (
+	clientSet *kubernetes.Clientset
+)
 
-func Switch() {
+func init() {
+	// 应用配置初始化
+	KConfig := ReadFromJson(GetConfigPath()).Env.(map[string]interface{})
+	currentEnv := ReadFromJson(GetConfigPath()).CurrentEnv
+	k8sconfig := KConfig[currentEnv].(map[string]interface{})
+	config, err := clientcmd.BuildConfigFromFlags("", k8sconfig["path"].(string))
+	if err != nil {
+		panic(fmt.Sprintf("k8s config path is error:%s", err))
+	}
+
+	// 根据指定的 config 创建一个新的 clientset
+	clientSet, err = kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(fmt.Sprintf("k8s NewForConfig is error:%s", err))
+	}
+}
+
+func GetClient() *kubernetes.Clientset {
+	return clientSet
 }

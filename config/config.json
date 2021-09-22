@@ -1,1 +1,1 @@
-{"current_env":"dev","env":{"dev":{"name":"开发环境","path":"./config/dev/config"},"prod":{"name":"正式环境","path":"./config/prod/config"},"test":{"name":"测试环境","path":"./config/test/config"}}}
+{"current_env":"test","env":{"dev":{"name":"开发环境","path":"./config/dev/config"},"prod":{"name":"正式环境","path":"./config/prod/config"},"test":{"name":"测试环境","path":"./config/test/config"}}}

@@ -75,9 +75,9 @@ func Help() {
 	helpInfo += "\r\n"
 	helpInfo += "The commands are: \r\n"
 	helpInfo += "\r\n"
-	helpInfo += "env                     show current environment, config environment list. "
+	helpInfo += "    env                     show current environment, config environment list. "
 	helpInfo += "\r\n"
-	helpInfo += "switch <environment>    switch current environment to target environment. "
+	helpInfo += "    switch <environment>    switch current environment to target environment.  "
 	helpInfo += "\r\n"
 	fmt.Println(helpInfo)
 }

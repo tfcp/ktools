@@ -1,6 +1,9 @@
 package library
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 const (
 	kBlack = iota + 30
@@ -41,4 +44,11 @@ func White(str string) string {
 
 func KColor(color int, str string) string {
 	return fmt.Sprintf("\x1b[0;%dm%s\x1b[0m", color, str)
+}
+
+func FilterResource(resourceName, inputName string) bool {
+	if strings.Contains(resourceName, inputName) {
+		return true
+	}
+	return false
 }

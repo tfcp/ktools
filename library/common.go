@@ -64,3 +64,12 @@ func CmdGraph(content []string) {
 	}
 	fmt.Println("#########################################################")
 }
+
+func CmdMap(content map[string]string) {
+	fmt.Println("#########################################################")
+	for k, v := range content {
+		fmt.Println("    " + Red(k) + "   :   " + Green(v))
+		fmt.Println("--------------------------------------------------")
+	}
+	fmt.Println("#########################################################")
+}

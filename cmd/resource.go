@@ -17,13 +17,9 @@ var (
 	cmdLog  = "log"
 	cmdDesc = "describe"
 	cmdTop  = "top"
-	cmdList = []string{
-		cmdLog, cmdDesc, cmdTop,
-	}
 )
 
 func init() {
-	//Deployment("d2d-ph")
 }
 
 func Namespace(ns string) []string {
@@ -44,17 +40,46 @@ func Resource() []string {
 	return resourceList
 }
 
-func CmdList() []string {
+func CmdList(resourceType string) []string {
+	var cmdList = []string{
+		cmdLog, cmdDesc, cmdTop,
+	}
+	switch resourceType {
+	case deploy, job:
+		cmdList = []string{cmdDesc}
+	}
 	library.CmdGraph(cmdList)
 	return cmdList
 }
 
-func Cmd(cmd, resourceName, resourceType string) {
+func Cmd(cmdString, resourceName, resourceType string) {
+	fmt.Println("cmdId:", cmdString)
+	fmt.Println("resourceName:", resourceName)
+	switch resourceType {
+	case deploy:
+
+	}
+}
+
+func describe(cmd, resourceName, resourceType, ns string) {
+	//client := library.GetClient()
+	//deploy, err := client.AppsV1beta2().Deployments().Get()
+	//deploy.Name
+	//deploy.Namespace
+	//deploy.ClusterName
+	//deploy.
+}
+
+func log() {
+
+}
+
+func top() {
 
 }
 
 // client-go  + regular
-func Deployment(ns, deploy string) {
+func Deployment(ns, deploy string) []string {
 	client := library.GetClient()
 	list := client.AppsV1beta2().Deployments(ns)
 	listOp := v1.ListOptions{
@@ -69,9 +94,10 @@ func Deployment(ns, deploy string) {
 		}
 	}
 	library.CmdGraph(resDeploy)
+	return resDeploy
 }
 
-func Pod(ns, pod string) {
+func Pod(ns, pod string) []string {
 	client := library.GetClient()
 	listPod := client.CoreV1().Pods(ns)
 	listOp := v1.ListOptions{
@@ -85,6 +111,7 @@ func Pod(ns, pod string) {
 		}
 	}
 	library.CmdGraph(resPod)
+	return resPod
 }
 
 func Pip() {
@@ -110,12 +137,14 @@ func Pip() {
 	fmt.Printf("please select u want resource(请选择你想查看的资源): ")
 	var selectResource int
 	fmt.Scan(&selectResource)
+	var resourceNameList []string
 	switch resourceList[selectResource] {
 	case deploy:
 		fmt.Printf("please input deploy (请输入deployment): ")
 		var deployName string
 		fmt.Scan(&deployName)
-		Deployment(nsList[selectNs], deployName)
+		resourceNameList = Deployment(nsList[selectNs], deployName)
+		//resourceNameList = Deployment(nsList[selectNs], deployName)
 	case job:
 	case pod:
 		fmt.Printf("please input pod (请输入pod): ")
@@ -123,8 +152,12 @@ func Pip() {
 		fmt.Scan(&podName)
 		Pod(nsList[selectNs], podName)
 	}
-	fmt.Printf("please input cmd (请输入cmd): ")
+	fmt.Printf("please select which resource u want (请选择你的目标资源): ")
 	var selectCmd int
 	fmt.Scan(&selectCmd)
-	Cmd()
+	cmdList := CmdList(resourceList[selectResource])
+	fmt.Printf("please input cmd (请输入命令行id): ")
+	var cmdId int
+	fmt.Scan(&cmdId)
+	Cmd(cmdList[cmdId], resourceNameList[selectCmd], resourceList[selectResource])
 }

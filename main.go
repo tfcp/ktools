@@ -15,6 +15,8 @@ const (
 	help = "help"
 	// pipline to use ktools
 	pip = "pip"
+	// pod cmd
+	pod = "pod"
 )
 
 var (
@@ -46,6 +48,8 @@ func main() {
 			cmd.Help()
 		case pip:
 			cmd.Pip()
+		case pod:
+			cmd.PodCmd()
 		}
 	}
 

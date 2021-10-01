@@ -33,7 +33,3 @@ func ReadFromJson(path string) *Config {
 func GetConfigPath() string {
 	return "./config/config.json"
 }
-
-func GetCurrentK8sPath() {
-
-}

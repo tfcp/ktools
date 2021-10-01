@@ -1,83 +1,62 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/gogf/gf/os/gfile"
 	"github.com/ktools/library"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// switch env
-// init env
-func Switch(env string, kconfig *library.Config) {
-	//f, err := ioutil.ReadFile("./test.json")
-	//if err != nil {
-	//	fmt.Println("Openerr:", err)
-	//	return
-	//}
-	//c := &library.Config{}
-	//err = json.Unmarshal(f, c)
-	//if err != nil {
-	//	fmt.Println("jsonerr:", err)
-	//	return
-	//}
-	c := kconfig
-	if c.CurrentEnv == env {
-		fmt.Println(fmt.Sprintf("switch to %s success.", library.Red(env)))
-		return
+var (
+	resourceTimeout = int64(5)
+	deploy          = "deployment"
+	job             = "job"
+	pod             = "pod"
+	resourceList    = []string{
+		deploy, job, pod,
 	}
-	// 替换env
-	envHas := false
-	for k, _ := range c.Env.(map[string]interface{}) {
-		if k == env {
-			c.CurrentEnv = k
-			envHas = true
-			break
-		}
-	}
-	if !envHas {
-		fmt.Println("env input is not in config.")
-		return
-	}
-	fc, _ := gfile.Create(library.GetConfigPath())
-	config := c
-	cc, _ := json.Marshal(config)
-	fc.Write(cc)
-	fmt.Println(fmt.Sprintf("switch to %s success.", library.Red(env)))
-}
+	cmdLog  = "log(日志)"
+	cmdDesc = "describe(详情)"
+	cmdEnv  = "env(环境变量)"
+)
 
 // global content print
 func GlobalFmt(config *library.Config) {
 	currentEnv := config.CurrentEnv
-	fmt.Println("currentEnv(当前环境):", library.Green(currentEnv))
+	fmt.Println("currentEnv(当前环境):  ", library.Yellow(currentEnv))
 }
 
-// environment command
-func Env(config *library.Config) {
-	env := config.Env
-	envNameList := []string{}
-	for k, v := range env.(map[string]interface{}) {
-		vm := v.(map[string]interface{})
-		envData := k + ":" + vm["name"].(string)
-		envNameList = append(envNameList, envData)
+// client-go  + regular
+func Deployment(ns, deploy string) []string {
+	client := library.GetClient()
+	list := client.AppsV1beta2().Deployments(ns)
+	listOp := v1.ListOptions{
+		TimeoutSeconds: &resourceTimeout,
 	}
-	fmt.Println("envList(环境列表): ", envNameList)
+	ds, _ := list.List(listOp)
+	//resDeploy := make([]v1beta2.Deployment, 0)
+	resDeploy := make([]string, 0)
+	for _, v := range ds.Items {
+		if library.FilterResource(v.Name, deploy) {
+			resDeploy = append(resDeploy, v.Name)
+		}
+	}
+	library.CmdGraph(resDeploy)
+	return resDeploy
 }
 
-func Help() {
-	helpInfo := "ktools is a funny local k8s tool. \r\n"
-	helpInfo += "\r\n"
-	// todo code line show ktools
-	helpInfo += ""
-	helpInfo += "Usage: \r\n"
-	helpInfo += "\r\n"
-	helpInfo += "    ktools <command> [arguments]"
-	helpInfo += "\r\n"
-	helpInfo += "The commands are: \r\n"
-	helpInfo += "\r\n"
-	helpInfo += "    env                     show current environment, config environment list. "
-	helpInfo += "\r\n"
-	helpInfo += "    switch <environment>    switch current environment to target environment.  "
-	helpInfo += "\r\n"
-	fmt.Println(helpInfo)
+func Pod(ns, pod string) []string {
+	client := library.GetClient()
+	listPod := client.CoreV1().Pods(ns)
+	listOp := v1.ListOptions{
+		TimeoutSeconds: &resourceTimeout,
+	}
+	pods, _ := listPod.List(listOp)
+	resPod := make([]string, 0)
+	for _, v := range pods.Items {
+		if library.FilterResource(v.Name, pod) {
+			resPod = append(resPod, v.Name)
+		}
+	}
+	library.CmdGraph(resPod)
+	return resPod
 }

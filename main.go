@@ -17,6 +17,8 @@ const (
 	pip = "pip"
 	// pod cmd
 	pod = "pod"
+	// ktools init
+	initCmd = "init"
 )
 
 var (
@@ -24,21 +26,34 @@ var (
 )
 
 func init() {
-	KConfig = library.ReadFromJson(library.GetConfigPath())
-	cmd.GlobalFmt(KConfig)
 
 }
 
 func main() {
-	var (
-	//ns string
-	)
 	//flag.StringVar(&ns, "ns", "default", "input your deploy name")
 	//flag.StringVar(&resourceName, "deploy", "default", "input your deploy name")
 
+	//defer func() {
+	//	if r := recover(); r != nil {
+	//		fmt.Println("please sure your input correct...")
+	//		fmt.Println("\r\n")
+	//		cmd.Help()
+	//	}
+	//}()
+
 	flag.Parse()
+
 	if len(flag.Args()) > 0 {
-		switch flag.Args()[0] {
+		args := flag.Args()
+		if args[0] == initCmd {
+			cmd.CmdInit()
+			return
+		}
+		KConfig = library.ReadFromJson(library.GetConfigPath())
+		cmd.GlobalFmt(KConfig)
+		switch args[0] {
+		case initCmd:
+
 		case env:
 			cmd.Env(KConfig)
 		case sw:

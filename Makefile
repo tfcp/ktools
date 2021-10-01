@@ -3,6 +3,6 @@ env:
 
 build:
         go build -o ktools main.go
-        sudo chmod +rwx ./ktools
-        sudo cp ./ktools /bin/
 
+init:
+    ln -s /Users/zhaosuji/go/src/github.com/ktools/ktools /usr/local/bin/ktools

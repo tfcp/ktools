@@ -1,4 +1,4 @@
-# tf-ktool
+# ktools
 a funny local k8s tool. 
 
 |  cmd   | describe  |
@@ -6,3 +6,4 @@ a funny local k8s tool.
 | help | show ktools help infos.  |
 | switch | switch local env.  |
 | env | config environment list. |
+| pod | pod cmd. |

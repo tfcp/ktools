@@ -2,16 +2,23 @@ package main
 
 import (
 	"fmt"
+	"github.com/gogf/gf/os/gctx"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
+	"github.com/gogf/gf/v2/os/gcache"
+	"time"
 )
 
+
+var (
+	NodeInformer cache.SharedIndexInformer
+	informerPeriod = 20*time.Second
+)
 
 func main() {
 
@@ -30,9 +37,8 @@ func main() {
 	//nodeInformer := sharedInformerFac.Core().V1().Nodes()
 	//informer := nodeInformer.Informer()
 	// 初始化 informer
-	factory := informers.NewSharedInformerFactory(clientset, 0)
-	nodeInformer := factory.Core().V1().Nodes()
-	informer := nodeInformer.Informer()
+	factory := informers.NewSharedInformerFactory(clientset, informerPeriod)
+	NodeInformer = factory.Core().V1().Nodes().Informer()
 	defer runtime.HandleCrash()
 	stopper := make(chan struct{})
 	defer close(stopper)
@@ -40,20 +46,20 @@ func main() {
 	go factory.Start(stopper)
 
 	// 等待 Cache 都同步完毕,必不可少
-	if !cache.WaitForCacheSync(stopper, informer.HasSynced) {
+	if !cache.WaitForCacheSync(stopper, NodeInformer.HasSynced) {
 		runtime.HandleError(fmt.Errorf("Timed out waiting for caches to sync"))
 		return
 	}
 	// 使用自定义 handler
-	informer.AddEventHandler(&NodeInformerHandler{})
+	NodeInformer.AddEventHandler(&NodeInformerHandler{})
 
-	// 创建 lister
-	nodeLister := nodeInformer.Lister()
-	// 从 lister 中获取所有 items
-	_, err = nodeLister.List(labels.Everything())
-	if err != nil {
-		fmt.Println(err)
-	}
+	//// 创建 lister
+	//nodeLister := nodeInformer.Lister()
+	//// 从 lister 中获取所有 items
+	//_, err = nodeLister.List(labels.Everything())
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 	<-stopper
 	select {}
 }
@@ -64,24 +70,35 @@ type NodeInformerHandler struct {
 
 func (nodeInformer *NodeInformerHandler) OnAdd(obj interface{}) {
 	if _,ok := obj.(*v1.Node);ok{
-		//fmt.Println("add node:", obj.(*v1.Node).Name)
+		fmt.Println("add node:", obj.(*v1.Node).Name)
 		//fmt.Println("add node:", obj.(*v1.Node).Status.Capacity)
-		fmt.Println("add node:", obj.(*v1.Node).Spec.Unschedulable)
-		fmt.Println(nodeInformer.List(nil))
+		//fmt.Println("add node:", obj.(*v1.Node).Spec.Unschedulable)
+		//fmt.Println(nodeInformer.List(nil))
 
 	}
 }
 
-func (nodeInformer *NodeInformerHandler) OnUpdate(obj1,obj2 interface{}) {
-	if _,ok := obj1.(*v1.Node);ok{
-		fmt.Println("update node:", obj1.(*v1.Node).Name)
+func (nodeInformer *NodeInformerHandler) OnUpdate(oldObj,newObj interface{}) {
+	if _,ok := newObj.(*v1.Node);ok{
+		//fmt.Println("update node:", obj1.(*v1.Node).Name)
+		list := NodeInformer.GetStore().List()
+		fmt.Println(list)
 	}
 }
 
 func (nodeInformer *NodeInformerHandler) OnDelete(obj interface{}) {
 	if _,ok := obj.(*v1.Node);ok{
 		fmt.Println("delete node:", obj.(*v1.Node).Name)
+		// 资源下线监控
+		var (
+			ctx           = gctx.New()
+			key1  int32   = 1
+			//key2  float64 = 1
+			value         = `value`
+		)
+		_ = gcache.Set(ctx, key1, value, 0)
 	}
 }
+
 
 // 参考获取Allocated resources https://www.jianshu.com/p/a3b8f1019d10

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-empty
+spec:
+  minReadySeconds: 2 # Kubernetes在等待设置的时间后才进行升级
+  strategy:
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1 # 升级过程中最多可以比原先设置多出的POD数量 比如 有4个replicas 这里会有1个Pending服务 总共1+4 = 5个pod
+      maxUnavailable: 2 # 升级过程中最多有多少个POD处于无法提供服务的状态 同时最多会有2个terminating容器 注意这2个不属于上面5个
+  replicas: 2
+  selector:
+    matchLabels:
+      app: deploy-empty
+  template:
+    metadata:
+      labels:
+        app: deploy-empty
+    spec:
+      # 目录挂载 emptyDir
+      # 1. 容器挂掉不会丢失 重启成功就还在
+      # 2. pod被删除 或者pod迁移 就会丢失
+      volumes:
+        - name: cache
+          emptyDir: {}
+      containers:
+        - name: nginx
+          image: nginx:1.7.8
+          # 挂载目录
+          volumeMounts:
+            - name: cache
+              mountPath: /var/log/cache
+          ports:
+            - containerPort: 80

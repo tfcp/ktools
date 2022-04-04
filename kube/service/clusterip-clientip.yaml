@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-cluster
+  namespace: default
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: spring-k8s
+  type: ClusterIP
+  sessionAffinity: ClientIP # 会话亲和性 None: 轮询pod   clientIP: 客户端ip亲和 同一个客户端ip会发送给同一个pod

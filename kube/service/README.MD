@@ -18,5 +18,6 @@
 
     为了节省lb 能够一个ip暴露更多的服务 可以使用ingress, 可以理解为service的service
     使用方式: 1. nginx-ingress绑定一个slb 2. nginx中和普通服务一样正常代理到service中 3. 新的域名指向nginx的slb
+    好处: 节省了宝贵的静态 IP 和 LoadBalancers 资源。
     
 

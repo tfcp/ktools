@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-k8s
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: spring-k8s
+  template:
+    metadata:
+      labels:
+        app: spring-k8s
+    spec:
+      volumes:
+        - name: cache
+          # node节点上的文件目录
+          hostPath:
+            path: /data/k8s
+      containers:
+        - name: spring-k8s
+          image: jiangbo920827/spring-k8s:liveness
+          volumeMounts:
+            - name: cache
+              mountPath: /var/log/cache
+          lifecycle: # pod hook 钩子失败或者超时都会kill掉容器
+            postStart: # 容器创建后立即执行 无法保证在docker entrypoint前执行
+              exec:
+                command: ["/bin/sh", "-c", "echo Hello from the preStop handler > /var/log/cache/h.txt"]
+          ports:
+            - containerPort: 8080
